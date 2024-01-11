@@ -1,6 +1,7 @@
 package tournament
 
 import (
+	"errors"
 	"sort"
 	"time"
 )
@@ -29,19 +30,25 @@ func NewResult(id int, tournamentId int) *Result {
 	}
 }
 
-func (r *Result) DefineRanking(participant Participant) {
+func (r *Result) CloseResult() {
+	r.Open = false
+	r.DateFinished = time.Now()
+}
+
+func (r *Result) DefineRanking(participant Participant) error {
 	if r.Open {
 		rank := Ranking{
 			ParticipantId: participant.ID,
 			Position:      0,
 			Score:         0,
 		}
-
 		r.Ranking = append(r.Ranking, rank)
+		return nil
 	}
+	return errors.New("Result cannot be changed")
 }
 
-func (r *Result) UpdateRanking(participantID int, newScore float64) {
+func (r *Result) UpdateRanking(participantID int, newScore float64) error {
 	if r.Open {
 		for i, rank := range r.Ranking {
 			if rank.ParticipantId == participantID {
@@ -54,8 +61,10 @@ func (r *Result) UpdateRanking(participantID int, newScore float64) {
 				for i := range r.Ranking {
 					r.Ranking[i].Position = i + 1
 				}
-				return
+				// return
 			}
 		}
+		return nil
 	}
+	return errors.New("Result cannot be changed")
 }

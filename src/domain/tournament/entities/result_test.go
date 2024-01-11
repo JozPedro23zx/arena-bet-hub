@@ -31,16 +31,21 @@ func TestDefineRanking(t *testing.T) {
 		State:   "State",
 		Country: "Country",
 	}
-
 	tournament := NewTournament(1, "Tournament test", time.Date(2024, time.March, 25, 22, 0, 0, 0, time.UTC), location)
 
 	participant := NewParticipant(1, "Arthur", "Excalibur", "USA")
+	participant2 := NewParticipant(2, "Jon", "Jon90z", "USA")
 
 	result := NewResult(1, tournament.ID)
+	err := result.DefineRanking((*participant))
 
-	result.DefineRanking((*participant))
-
+	assert.NoError(t, err)
 	assert.NotEmpty(t, result.Ranking)
+
+	result.CloseResult()
+	err = result.DefineRanking(*participant2)
+
+	assert.Error(t, err, "Result cannot be changed")
 }
 
 func TestUpdateRanking(t *testing.T) {
@@ -66,6 +71,7 @@ func TestUpdateRanking(t *testing.T) {
 	score1 := 10.11
 	socre2 := 24.14
 	score3 := 0.28
+	score4 := 1.45
 
 	result.UpdateRanking(participant1.ID, score1)
 	result.UpdateRanking(participant2.ID, socre2)
@@ -80,4 +86,9 @@ func TestUpdateRanking(t *testing.T) {
 	assert.Equal(t, 3, result.Ranking[2].Position)
 	assert.Equal(t, participant3.ID, result.Ranking[2].ParticipantId)
 
+	result.CloseResult()
+
+	err := result.UpdateRanking(participant1.ID, score4)
+
+	assert.Error(t, err, "Result cannot be changed")
 }
