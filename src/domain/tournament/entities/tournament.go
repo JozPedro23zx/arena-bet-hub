@@ -1,6 +1,7 @@
 package tournament
 
 import (
+	"errors"
 	"time"
 )
 
@@ -31,21 +32,27 @@ func NewTournament(ID int, name string, eventDate time.Time, location Location) 
 	}
 }
 
-func (t *Tournament) UpdateTournament(name string, eventDate time.Time, location Location) {
+func (t *Tournament) UpdateTournament(name string, eventDate time.Time, location Location) error {
 	if !t.Finished {
 		t.Name = name
 		t.EventDate = eventDate
 		t.Location = location
+
+		return nil
 	}
+
+	return errors.New("This tournament has finished")
 }
 
-func (t *Tournament) RegisterParticipant(participant Participant) {
+func (t *Tournament) RegisterParticipant(participant Participant) error {
 	if !t.Finished {
 		t.IDParticipants = append(t.IDParticipants, participant.ID)
+		return nil
 	}
+	return errors.New("This tournament has finished")
 }
 
-func (t *Tournament) RemoveParticipant(participantID int) {
+func (t *Tournament) RemoveParticipant(participantID int) error {
 	if !t.Finished {
 		for i, id := range t.IDParticipants {
 			if id == participantID {
@@ -53,7 +60,9 @@ func (t *Tournament) RemoveParticipant(participantID int) {
 				break
 			}
 		}
+		return nil
 	}
+	return errors.New("This tournament has finished")
 }
 
 func (t *Tournament) FinishTournament() {
