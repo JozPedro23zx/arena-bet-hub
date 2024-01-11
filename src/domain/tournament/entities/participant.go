@@ -5,6 +5,7 @@ type Participant struct {
 	Name          string
 	NickName      string
 	CountryOrigin string
+	Tournaments   []int
 }
 
 func NewParticipant(id int, name string, nickName string, countryOrigin string) *Participant {
@@ -13,6 +14,7 @@ func NewParticipant(id int, name string, nickName string, countryOrigin string) 
 		Name:          name,
 		NickName:      nickName,
 		CountryOrigin: countryOrigin,
+		Tournaments:   []int{},
 	}
 }
 
@@ -20,4 +22,8 @@ func (p *Participant) UpdateParticipant(name string, nickName string, countryOri
 	p.Name = name
 	p.NickName = nickName
 	p.CountryOrigin = countryOrigin
+}
+
+func (p *Participant) RegisterTournamentParticipation(tournament Tournament) {
+	p.Tournaments = append(p.Tournaments, tournament.ID)
 }

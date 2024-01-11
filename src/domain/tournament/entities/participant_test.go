@@ -2,6 +2,7 @@ package tournament
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -20,4 +21,20 @@ func TestUpdateParticipant(t *testing.T) {
 	updatedNick := "Excalibur_t286"
 
 	participant.UpdateParticipant(participant.Name, updatedNick, participant.CountryOrigin)
+}
+
+func TestRegisterTournamentParticipation(t *testing.T) {
+	location := Location{
+		Street:  "street",
+		City:    "City",
+		State:   "State",
+		Country: "Country",
+	}
+	tournament := NewTournament(1, "Tournament test", time.Date(2024, time.March, 25, 22, 0, 0, 0, time.UTC), location)
+
+	participant := NewParticipant(2, "Jon", "Jon90z", "USA")
+	participant.RegisterTournamentParticipation(*tournament)
+
+	assert.NotEmpty(t, participant.Tournaments)
+	assert.Equal(t, participant.Tournaments[0], tournament.ID)
 }
