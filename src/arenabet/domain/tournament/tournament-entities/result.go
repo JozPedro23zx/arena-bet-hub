@@ -1,4 +1,4 @@
-package tournament
+package tournament_entities
 
 import (
 	"errors"
