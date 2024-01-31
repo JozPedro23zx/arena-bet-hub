@@ -16,11 +16,11 @@ func TestNewResult(t *testing.T) {
 		Country: "Country",
 	}
 
-	tournament := NewTournament(1, "Tournament test", time.Date(2024, time.March, 25, 22, 0, 0, 0, time.UTC), location)
+	tournament := NewTournament("1", "Tournament test", time.Date(2024, time.March, 25, 22, 0, 0, 0, time.UTC), location)
 
-	result := NewResult(1, tournament.ID)
+	result := NewResult("1", tournament.ID)
 
-	assert.Equal(t, 1, result.ID)
+	assert.Equal(t, "1", result.ID)
 	assert.Equal(t, tournament.ID, result.ID)
 }
 
@@ -31,12 +31,12 @@ func TestDefineRanking(t *testing.T) {
 		State:   "State",
 		Country: "Country",
 	}
-	tournament := NewTournament(1, "Tournament test", time.Date(2024, time.March, 25, 22, 0, 0, 0, time.UTC), location)
+	tournament := NewTournament("1", "Tournament test", time.Date(2024, time.March, 25, 22, 0, 0, 0, time.UTC), location)
 
-	participant := NewParticipant(1, "Arthur", "Excalibur", "USA")
-	participant2 := NewParticipant(2, "Jon", "Jon90z", "USA")
+	participant := NewParticipant("1", "Arthur", "Excalibur", "USA")
+	participant2 := NewParticipant("2", "Jon", "Jon90z", "USA")
 
-	result := NewResult(1, tournament.ID)
+	result := NewResult("1", tournament.ID)
 	err := result.DefineRanking((*participant))
 
 	assert.NoError(t, err)
@@ -56,13 +56,13 @@ func TestUpdateRanking(t *testing.T) {
 		Country: "Country",
 	}
 
-	tournament := NewTournament(1, "Tournament test", time.Date(2024, time.March, 25, 22, 0, 0, 0, time.UTC), location)
+	tournament := NewTournament("1", "Tournament test", time.Date(2024, time.March, 25, 22, 0, 0, 0, time.UTC), location)
 
-	participant1 := NewParticipant(1, "Arthur", "Excalibur", "USA")
-	participant2 := NewParticipant(2, "Jon", "Jon90z", "USA")
-	participant3 := NewParticipant(3, "Mateus", "Mateuzin10", "Brazil")
+	participant1 := NewParticipant("1", "Arthur", "Excalibur", "USA")
+	participant2 := NewParticipant("2", "Jon", "Jon90z", "USA")
+	participant3 := NewParticipant("3", "Mateus", "Mateuzin10", "Brazil")
 
-	result := NewResult(1, tournament.ID)
+	result := NewResult("1", tournament.ID)
 
 	result.DefineRanking(*participant1)
 	result.DefineRanking(*participant2)

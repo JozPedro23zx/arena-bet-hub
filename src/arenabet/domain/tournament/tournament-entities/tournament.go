@@ -13,21 +13,21 @@ type Location struct {
 }
 
 type Tournament struct {
-	ID             int
+	ID             string
 	Name           string
 	EventDate      time.Time
 	Location       Location
-	IDParticipants []int
+	IDParticipants []string
 	Finished       bool
 }
 
-func NewTournament(ID int, name string, eventDate time.Time, location Location) *Tournament {
+func NewTournament(ID string, name string, eventDate time.Time, location Location) *Tournament {
 	return &Tournament{
 		ID:             ID,
 		Name:           name,
 		EventDate:      eventDate,
 		Location:       location,
-		IDParticipants: []int{},
+		IDParticipants: []string{},
 		Finished:       false,
 	}
 }
@@ -52,7 +52,7 @@ func (t *Tournament) RegisterParticipant(participant Participant) error {
 	return errors.New("This tournament has finished")
 }
 
-func (t *Tournament) RemoveParticipant(participantID int) error {
+func (t *Tournament) RemoveParticipant(participantID string) error {
 	if !t.Finished {
 		for i, id := range t.IDParticipants {
 			if id == participantID {

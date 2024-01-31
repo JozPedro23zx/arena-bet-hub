@@ -8,7 +8,7 @@ import (
 )
 
 func TestNewParticipant(t *testing.T) {
-	participant := NewParticipant(1, "Arthur", "Excalibur", "USA")
+	participant := NewParticipant("1", "Arthur", "Excalibur", "USA")
 
 	assert.Equal(t, "Arthur", participant.Name)
 	assert.Equal(t, "Excalibur", participant.NickName)
@@ -16,7 +16,7 @@ func TestNewParticipant(t *testing.T) {
 }
 
 func TestUpdateParticipant(t *testing.T) {
-	participant := NewParticipant(1, "Arthur", "Excalibur", "USA")
+	participant := NewParticipant("1", "Arthur", "Excalibur", "USA")
 
 	updatedNick := "Excalibur_t286"
 
@@ -30,9 +30,9 @@ func TestRegisterTournamentParticipation(t *testing.T) {
 		State:   "State",
 		Country: "Country",
 	}
-	tournament := NewTournament(1, "Tournament test", time.Date(2024, time.March, 25, 22, 0, 0, 0, time.UTC), location)
+	tournament := NewTournament("1", "Tournament test", time.Date(2024, time.March, 25, 22, 0, 0, 0, time.UTC), location)
 
-	participant := NewParticipant(2, "Jon", "Jon90z", "USA")
+	participant := NewParticipant("2", "Jon", "Jon90z", "USA")
 	participant.RegisterTournamentParticipation(*tournament)
 
 	assert.NotEmpty(t, participant.Tournaments)

@@ -7,20 +7,20 @@ import (
 )
 
 type Ranking struct {
-	ParticipantId int
+	ParticipantId string
 	Position      int
 	Score         float64
 }
 
 type Result struct {
-	ID           int
-	TournamentId int
+	ID           string
+	TournamentId string
 	Ranking      []Ranking
 	Open         bool
 	DateFinished time.Time
 }
 
-func NewResult(id int, tournamentId int) *Result {
+func NewResult(id string, tournamentId string) *Result {
 	return &Result{
 		ID:           id,
 		TournamentId: tournamentId,
@@ -48,7 +48,7 @@ func (r *Result) DefineRanking(participant Participant) error {
 	return errors.New("Result cannot be changed")
 }
 
-func (r *Result) UpdateRanking(participantID int, newScore float64) error {
+func (r *Result) UpdateRanking(participantID string, newScore float64) error {
 	if r.Open {
 		for i, rank := range r.Ranking {
 			if rank.ParticipantId == participantID {

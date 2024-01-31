@@ -15,14 +15,14 @@ func TestNewTournament(t *testing.T) {
 		Country: "Country",
 	}
 
-	tournament := NewTournament(1, "Tournament test", time.Date(2024, time.March, 25, 22, 0, 0, 0, time.UTC), location)
+	tournament := NewTournament("1", "Tournament test", time.Date(2024, time.March, 25, 22, 0, 0, 0, time.UTC), location)
 
-	assert.Equal(t, 1, tournament.ID)
+	assert.Equal(t, "1", tournament.ID)
 	assert.Equal(t, "Tournament test", tournament.Name)
 	assert.NotZero(t, tournament.EventDate)
 	assert.Equal(t, time.Date(2024, time.March, 25, 22, 0, 0, 0, time.UTC), tournament.EventDate)
 	assert.Equal(t, location, tournament.Location)
-	assert.Equal(t, []int{}, tournament.IDParticipants)
+	assert.Equal(t, []string{}, tournament.IDParticipants)
 }
 
 func TestUpdateTournament(t *testing.T) {
@@ -33,7 +33,7 @@ func TestUpdateTournament(t *testing.T) {
 		Country: "Country",
 	}
 
-	tournament := NewTournament(1, "Tournament test", time.Date(2024, time.March, 25, 22, 0, 0, 0, time.UTC), location)
+	tournament := NewTournament("1", "Tournament test", time.Date(2024, time.March, 25, 22, 0, 0, 0, time.UTC), location)
 
 	updatedName := "Tournament test updated"
 	updatedTime := time.Date(2024, time.April, 25, 22, 0, 0, 0, time.UTC)
@@ -80,8 +80,8 @@ func TestRegisterParticipant(t *testing.T) {
 		State:   "State",
 		Country: "Country",
 	}
-	tournament := NewTournament(1, "Tournament test", time.Date(2024, time.March, 25, 22, 0, 0, 0, time.UTC), location)
-	participant := NewParticipant(1, "Jon", "Jon90z", "USA")
+	tournament := NewTournament("1", "Tournament test", time.Date(2024, time.March, 25, 22, 0, 0, 0, time.UTC), location)
+	participant := NewParticipant("1", "Jon", "Jon90z", "USA")
 
 	tournament.RegisterParticipant(*participant)
 
@@ -96,9 +96,9 @@ func TestRemoveParticipant(t *testing.T) {
 		State:   "State",
 		Country: "Country",
 	}
-	tournament := NewTournament(1, "Tournament test", time.Date(2024, time.March, 25, 22, 0, 0, 0, time.UTC), location)
-	participant := NewParticipant(1, "Jon", "Jon90z", "USA")
-	participant2 := NewParticipant(2, "Mateus", "Mateuzin10", "Brazil")
+	tournament := NewTournament("1", "Tournament test", time.Date(2024, time.March, 25, 22, 0, 0, 0, time.UTC), location)
+	participant := NewParticipant("1", "Jon", "Jon90z", "USA")
+	participant2 := NewParticipant("2", "Mateus", "Mateuzin10", "Brazil")
 
 	tournament.RegisterParticipant(*participant)
 

@@ -1,20 +1,20 @@
 package tournament_entities
 
 type Participant struct {
-	ID            int
+	ID            string
 	Name          string
 	NickName      string
 	CountryOrigin string
-	Tournaments   []int
+	Tournaments   []string
 }
 
-func NewParticipant(id int, name string, nickName string, countryOrigin string) *Participant {
+func NewParticipant(id string, name string, nickName string, countryOrigin string) *Participant {
 	return &Participant{
 		ID:            id,
 		Name:          name,
 		NickName:      nickName,
 		CountryOrigin: countryOrigin,
-		Tournaments:   []int{},
+		Tournaments:   []string{},
 	}
 }
 
