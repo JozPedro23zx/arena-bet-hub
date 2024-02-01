@@ -45,7 +45,7 @@ func TestFindTournament(t *testing.T) {
 	_, err := createTournament.Execute(inputCreate)
 
 	inputFind := TournamentInputDto{ID: "l12"}
-	expectedOutput := TournamentOutupttDto{
+	expectedOutput := TournamentOutputDto{
 		ID:        "l12",
 		Name:      "Namez",
 		EventDate: inputCreate.EventDate,

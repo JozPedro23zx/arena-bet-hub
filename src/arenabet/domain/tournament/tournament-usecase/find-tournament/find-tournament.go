@@ -12,14 +12,14 @@ func NewFindTournament(repository repository.TournamentRepository) *FindTourname
 	return &FindTournament{Repository: repository}
 }
 
-func (ft *FindTournament) Execute(input TournamentInputDto) (TournamentOutupttDto, error) {
+func (ft *FindTournament) Execute(input TournamentInputDto) (TournamentOutputDto, error) {
 	tournament, err := ft.Repository.Find(input.ID)
 
 	if err != nil {
-		return TournamentOutupttDto{}, err
+		return TournamentOutputDto{}, err
 	}
 
-	output := TournamentOutupttDto{
+	output := TournamentOutputDto{
 		ID:        tournament.ID,
 		Name:      tournament.Name,
 		EventDate: tournament.EventDate,
