@@ -20,21 +20,14 @@ func (ut *UpdateTournament) Execute(input TournamentInputDto) (TournamentOutputD
 		return TournamentOutputDto{}, err
 	}
 
-	// if tournament == nil {
-	// 	err := errors.New("This tournament not exist")
-	// 	return TournamentOutputDto{}, err
-	// }
-
-	location := Tournament.Location{
+	newLocation := Tournament.Location{
 		Street:  input.Street,
 		City:    input.City,
 		State:   input.State,
 		Country: input.Country,
 	}
 
-	// newTournament := Tournament.NewTournament(input.ID, input.Name, input.EventDate, location)
-
-	tournament.UpdateTournament(input.Name, input.EventDate, location)
+	tournament.UpdateTournament(input.Name, input.EventDate, newLocation)
 
 	updatedTournament, err := ut.Repository.Update(*tournament)
 

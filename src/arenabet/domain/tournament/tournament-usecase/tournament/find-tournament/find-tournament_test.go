@@ -9,7 +9,7 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 
-	CreateTournament "github.com/JozPedro23zx/arena-bet-hub/domain/tournament/tournament-usecase/create-tournament"
+	CreateTournament "github.com/JozPedro23zx/arena-bet-hub/domain/tournament/tournament-usecase/tournament/create-tournament"
 
 	Tournament "github.com/JozPedro23zx/arena-bet-hub/domain/tournament/tournament-entities"
 )
