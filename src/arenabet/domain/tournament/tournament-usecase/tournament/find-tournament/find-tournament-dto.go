@@ -14,5 +14,5 @@ type TournamentOutputDto struct {
 	City      string    `json:"city"`
 	State     string    `json:"state"`
 	Country   string    `json:"country"`
-	Finished  bool      `json:finished`
+	Finished  bool      `json:"finished"`
 }
