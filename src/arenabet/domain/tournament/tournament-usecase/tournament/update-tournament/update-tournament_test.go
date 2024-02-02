@@ -43,7 +43,9 @@ func TestUpdateTournament(t *testing.T) {
 
 	createTournamentUC := CreateTournament.NewCreateTournament(repositoryMock)
 
-	_, err := createTournamentUC.Execute(input1)
+	output1, err := createTournamentUC.Execute(input1)
+	assert.Nil(t, err)
+	assert.NotEmpty(t, output1)
 
 	input2 := TournamentInputDto{
 		ID:        "l12",
