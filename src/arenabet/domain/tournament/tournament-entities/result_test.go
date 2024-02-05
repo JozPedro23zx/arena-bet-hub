@@ -37,13 +37,13 @@ func TestDefineRanking(t *testing.T) {
 	participant2 := NewParticipant("2", "Jon", "Jon90z", "USA")
 
 	result := NewResult("1", tournament.ID)
-	err := result.DefineRanking((*participant))
+	_, err := result.DefineRanking((*&participant.ID))
 
 	assert.NoError(t, err)
 	assert.NotEmpty(t, result.Ranking)
 
 	result.CloseResult()
-	err = result.DefineRanking(*participant2)
+	_, err = result.DefineRanking(*&participant2.ID)
 
 	assert.Error(t, err, "Result cannot be changed")
 }
@@ -64,9 +64,9 @@ func TestUpdateRanking(t *testing.T) {
 
 	result := NewResult("1", tournament.ID)
 
-	result.DefineRanking(*participant1)
-	result.DefineRanking(*participant2)
-	result.DefineRanking(*participant3)
+	result.DefineRanking(*&participant1.ID)
+	result.DefineRanking(*&participant2.ID)
+	result.DefineRanking(*&participant3.ID)
 
 	score1 := 10.11
 	socre2 := 24.14

@@ -32,20 +32,27 @@ func NewResult(id string, tournamentId string) *Result {
 
 func (r *Result) CloseResult() {
 	r.Open = false
-	r.DateFinished = time.Now()
+	r.DateFinished = time.Now().Truncate(time.Millisecond)
 }
 
-func (r *Result) DefineRanking(participant Participant) error {
+func (r *Result) DefineRanking(participantId string) (Ranking, error) {
 	if r.Open {
+		for _, existingRanking := range r.Ranking {
+			if existingRanking.ParticipantId == participantId {
+
+				return existingRanking, errors.New("participant already registered")
+			}
+		}
+
 		rank := Ranking{
-			ParticipantId: participant.ID,
+			ParticipantId: participantId,
 			Position:      0,
 			Score:         0,
 		}
 		r.Ranking = append(r.Ranking, rank)
-		return nil
+		return rank, nil
 	}
-	return errors.New("Result cannot be changed")
+	return Ranking{}, errors.New("Result cannot be changed")
 }
 
 func (r *Result) UpdateRanking(participantID string, newScore float64) error {
