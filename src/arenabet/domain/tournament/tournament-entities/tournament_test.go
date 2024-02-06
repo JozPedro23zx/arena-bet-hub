@@ -22,7 +22,7 @@ func TestNewTournament(t *testing.T) {
 	assert.NotZero(t, tournament.EventDate)
 	assert.Equal(t, time.Date(2024, time.March, 25, 22, 0, 0, 0, time.UTC), tournament.EventDate)
 	assert.Equal(t, location, tournament.Location)
-	assert.Equal(t, []string{}, tournament.IDParticipants)
+	assert.Equal(t, []string{}, tournament.participants)
 }
 
 func TestUpdateTournament(t *testing.T) {
@@ -83,10 +83,10 @@ func TestRegisterParticipant(t *testing.T) {
 	tournament := NewTournament("1", "Tournament test", time.Date(2024, time.March, 25, 22, 0, 0, 0, time.UTC), location)
 	participant := NewParticipant("1", "Jon", "Jon90z", "USA")
 
-	tournament.RegisterParticipant(*participant)
+	tournament.RegisterParticipant(*&participant.ID)
 
-	assert.NotEmpty(t, tournament.IDParticipants)
-	assert.Equal(t, participant.ID, tournament.IDParticipants[0])
+	assert.NotEmpty(t, tournament.participants)
+	assert.Equal(t, participant.ID, tournament.participants[0])
 }
 
 func TestRemoveParticipant(t *testing.T) {
@@ -100,18 +100,18 @@ func TestRemoveParticipant(t *testing.T) {
 	participant := NewParticipant("1", "Jon", "Jon90z", "USA")
 	participant2 := NewParticipant("2", "Mateus", "Mateuzin10", "Brazil")
 
-	tournament.RegisterParticipant(*participant)
+	tournament.RegisterParticipant(*&participant.ID)
 
-	assert.NotEmpty(t, tournament.IDParticipants)
-	assert.Equal(t, participant.ID, tournament.IDParticipants[0])
+	assert.NotEmpty(t, tournament.participants)
+	assert.Equal(t, participant.ID, tournament.participants[0])
 
 	tournament.RemoveParticipant(participant.ID)
-	assert.Empty(t, tournament.IDParticipants)
+	assert.Empty(t, tournament.participants)
 
 	tournament.FinishTournament()
 
-	err := tournament.RegisterParticipant(*participant2)
+	err := tournament.RegisterParticipant(*&participant2.ID)
 
-	assert.Empty(t, tournament.IDParticipants)
+	assert.Empty(t, tournament.participants)
 	assert.Error(t, err, "This tournament has finished")
 }

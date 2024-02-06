@@ -9,8 +9,6 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 
-	CreateTournament "github.com/JozPedro23zx/arena-bet-hub/domain/tournament/tournament-usecase/tournament/create-tournament"
-
 	Tournament "github.com/JozPedro23zx/arena-bet-hub/domain/tournament/tournament-entities"
 )
 
@@ -19,38 +17,19 @@ func TestUpdateTournament(t *testing.T) {
 	defer ctrl.Finish()
 	repositoryMock := mock_tournament_repositories.NewMockTournamentRepository(ctrl)
 
-	input1 := CreateTournament.TournamentInputDto{
-		ID:        "l12",
-		Name:      "Namez",
-		EventDate: time.Now(),
-		Street:    "street",
-		City:      "city",
-		State:     "state",
-		Country:   "country",
-	}
-
 	location := Tournament.Location{
-		Street:  input1.Street,
-		City:    input1.City,
-		State:   input1.State,
-		Country: input1.Country,
+		Street:  "street",
+		City:    "city",
+		State:   "state",
+		Country: "country",
 	}
 
-	newTournament := Tournament.NewTournament(input1.ID, input1.Name, input1.EventDate, location)
+	newTournament := Tournament.NewTournament("l12", "Namez", time.Now(), location)
 
-	repositoryMock.EXPECT().Find(input1.ID)
-	repositoryMock.EXPECT().Insert(*newTournament).Return(nil)
-
-	createTournamentUC := CreateTournament.NewCreateTournament(repositoryMock)
-
-	output1, err := createTournamentUC.Execute(input1)
-	assert.Nil(t, err)
-	assert.NotEmpty(t, output1)
-
-	input2 := TournamentInputDto{
+	input := TournamentInputDto{
 		ID:        "l12",
 		Name:      "Eventz",
-		EventDate: input1.EventDate,
+		EventDate: newTournament.EventDate,
 		Street:    "streetz",
 		City:      "cityz",
 		State:     "statez",
@@ -58,34 +37,93 @@ func TestUpdateTournament(t *testing.T) {
 	}
 
 	expectedOutput := TournamentOutputDto{
-		ID:        "l12",
-		Name:      "Eventz",
-		EventDate: input1.EventDate,
-		Street:    "streetz",
-		City:      "cityz",
-		State:     "statez",
-		Country:   "countryz",
-		Finished:  false,
+		ID:           "l12",
+		Name:         "Eventz",
+		EventDate:    newTournament.EventDate,
+		Street:       "streetz",
+		City:         "cityz",
+		State:        "statez",
+		Country:      "countryz",
+		Participants: newTournament.Participants(),
+		Finished:     false,
 	}
 
 	locationUpdated := Tournament.Location{
-		Street:  input2.Street,
-		City:    input2.City,
-		State:   input2.State,
-		Country: input2.Country,
+		Street:  input.Street,
+		City:    input.City,
+		State:   input.State,
+		Country: input.Country,
 	}
 
-	newTournamentUpdated := Tournament.NewTournament(input2.ID, input2.Name, input2.EventDate, locationUpdated)
+	newTournamentUpdated := Tournament.NewTournament(input.ID, input.Name, input.EventDate, locationUpdated)
 
-	repositoryMock.EXPECT().Find(input2.ID).Return(newTournament, nil)
+	repositoryMock.EXPECT().Find(input.ID).Return(newTournament, nil)
 	repositoryMock.EXPECT().Update(*newTournamentUpdated).Return(newTournamentUpdated, nil)
 
 	updateTournamentUC := NewUpdateTournament(repositoryMock)
-
-	output, err := updateTournamentUC.Execute(input2)
+	output, err := updateTournamentUC.Execute(input)
 
 	assert.Nil(t, err)
 	assert.Equal(t, expectedOutput, output)
+}
+
+func TestAddParticipant(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	repositoryMock := mock_tournament_repositories.NewMockTournamentRepository(ctrl)
+
+	input := ParticipantListDto{
+		IDTournament:  "tournament123",
+		ParticipantID: "participant123",
+	}
+
+	location := Tournament.Location{
+		Street:  "street",
+		City:    "city",
+		State:   "state",
+		Country: "country",
+	}
+
+	newTournament := Tournament.NewTournament(input.IDTournament, "event12", time.Now(), location)
+	updatedTornament := Tournament.NewTournament(newTournament.ID, newTournament.Name, newTournament.EventDate, newTournament.Location)
+	updatedTornament.RegisterParticipant(input.ParticipantID)
+
+	repositoryMock.EXPECT().Find(input.IDTournament).Return(newTournament, nil)
+	repositoryMock.EXPECT().Update(*updatedTornament).Return(updatedTornament, nil)
+
+	updateTournament := NewUpdateTournament(repositoryMock)
+	output, err := updateTournament.AddParticipant(input)
+
+	assert.Nil(t, err)
+	assert.Equal(t, output.Participants[0], input.ParticipantID)
+}
+
+func TestParticipantAlreadyExist(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	repositoryMock := mock_tournament_repositories.NewMockTournamentRepository(ctrl)
+
+	input := ParticipantListDto{
+		IDTournament:  "tournament123",
+		ParticipantID: "participant123",
+	}
+
+	location := Tournament.Location{
+		Street:  "street",
+		City:    "city",
+		State:   "state",
+		Country: "country",
+	}
+
+	newTournament := Tournament.NewTournament(input.IDTournament, "event12", time.Now(), location)
+	participantAlreadyExist := newTournament.RegisterParticipant(input.ParticipantID)
+
+	repositoryMock.EXPECT().Find(input.IDTournament).Return(newTournament, nil)
+
+	updateTournament := NewUpdateTournament(repositoryMock)
+	_, err := updateTournament.AddParticipant(input)
+
+	assert.Error(t, err, participantAlreadyExist)
 }
 
 func TestTournamentNotFound(t *testing.T) {

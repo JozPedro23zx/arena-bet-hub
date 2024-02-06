@@ -36,14 +36,49 @@ func (ut *UpdateTournament) Execute(input TournamentInputDto) (TournamentOutputD
 	}
 
 	output := TournamentOutputDto{
-		ID:        updatedTournament.ID,
-		Name:      updatedTournament.Name,
-		EventDate: updatedTournament.EventDate,
-		Street:    updatedTournament.Location.Street,
-		City:      updatedTournament.Location.City,
-		State:     updatedTournament.Location.State,
-		Country:   updatedTournament.Location.Country,
-		Finished:  updatedTournament.Finished,
+		ID:           updatedTournament.ID,
+		Name:         updatedTournament.Name,
+		EventDate:    updatedTournament.EventDate,
+		Street:       updatedTournament.Location.Street,
+		City:         updatedTournament.Location.City,
+		State:        updatedTournament.Location.State,
+		Country:      updatedTournament.Location.Country,
+		Participants: updatedTournament.Participants(),
+		Finished:     updatedTournament.Finished,
+	}
+
+	return output, nil
+}
+
+func (ut *UpdateTournament) AddParticipant(input ParticipantListDto) (TournamentOutputDto, error) {
+	tournament, err := ut.Repository.Find(input.IDTournament)
+
+	if err != nil {
+		return TournamentOutputDto{}, err
+	}
+
+	participantExist := tournament.RegisterParticipant(input.ParticipantID)
+
+	if participantExist != nil {
+		return TournamentOutputDto{}, participantExist
+	}
+
+	updatedTournament, err := ut.Repository.Update(*tournament)
+
+	if err != nil {
+		return TournamentOutputDto{}, err
+	}
+
+	output := TournamentOutputDto{
+		ID:           updatedTournament.ID,
+		Name:         updatedTournament.Name,
+		EventDate:    updatedTournament.EventDate,
+		Street:       updatedTournament.Location.Street,
+		City:         updatedTournament.Location.City,
+		State:        updatedTournament.Location.State,
+		Country:      updatedTournament.Location.Country,
+		Participants: updatedTournament.Participants(),
+		Finished:     updatedTournament.Finished,
 	}
 
 	return output, nil
