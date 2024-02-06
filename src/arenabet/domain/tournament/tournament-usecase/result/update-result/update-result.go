@@ -3,6 +3,7 @@ package updateresult
 import (
 	"errors"
 
+	Tournament "github.com/JozPedro23zx/arena-bet-hub/domain/tournament/tournament-entities"
 	repository "github.com/JozPedro23zx/arena-bet-hub/domain/tournament/tournament-repositories"
 )
 
@@ -31,10 +32,11 @@ func (ur *UpdateResult) CloseOrOpenResult(input OpenInputDto) (ResultOutputDto, 
 		return ResultOutputDto{}, err
 	}
 
+	rankingOutput := getRanking(*updatedResult)
 	output := ResultOutputDto{
 		ID:           updatedResult.ID,
 		TurnamentID:  updatedResult.TournamentId,
-		Ranking:      updatedResult.Ranking,
+		Ranking:      rankingOutput,
 		Open:         updatedResult.Open,
 		DateFinished: updatedResult.DateFinished,
 	}
@@ -43,7 +45,7 @@ func (ur *UpdateResult) CloseOrOpenResult(input OpenInputDto) (ResultOutputDto, 
 }
 
 func (ur *UpdateResult) AddParticipant(input RankingInputDto) error {
-	result, err := ur.Repository.Find(input.ID)
+	result, err := ur.Repository.Find(input.ResultID)
 
 	if err != nil {
 		return err
@@ -59,17 +61,19 @@ func (ur *UpdateResult) AddParticipant(input RankingInputDto) error {
 }
 
 func (ur *UpdateResult) UpdateRanking(input RankingInputDto) (ResultOutputDto, error) {
-	result, err := ur.Repository.Find(input.ID)
+	result, err := ur.Repository.Find(input.ResultID)
 
 	if err != nil {
 		return ResultOutputDto{}, err
 	}
 
 	if !result.Open {
+
+		rankingOutput := getRanking(*result)
 		output := ResultOutputDto{
 			ID:           result.ID,
 			TurnamentID:  result.TournamentId,
-			Ranking:      result.Ranking,
+			Ranking:      rankingOutput,
 			Open:         result.Open,
 			DateFinished: result.DateFinished,
 		}
@@ -90,13 +94,26 @@ func (ur *UpdateResult) UpdateRanking(input RankingInputDto) (ResultOutputDto, e
 		return ResultOutputDto{}, err
 	}
 
+	rankingOutput := getRanking(*updatedResult)
 	output := ResultOutputDto{
 		ID:           updatedResult.ID,
 		TurnamentID:  updatedResult.TournamentId,
-		Ranking:      updatedResult.Ranking,
+		Ranking:      rankingOutput,
 		Open:         updatedResult.Open,
 		DateFinished: updatedResult.DateFinished,
 	}
 
 	return output, err
+}
+
+func getRanking(result Tournament.Result) []RankingOutputDto {
+	rankingOutput := []RankingOutputDto{}
+	for _, rank := range result.Ranking() {
+		output := RankingOutputDto{
+			ParticipantID: rank.ParticipantId,
+			Score:         rank.Score,
+		}
+		rankingOutput = append(rankingOutput, output)
+	}
+	return rankingOutput
 }

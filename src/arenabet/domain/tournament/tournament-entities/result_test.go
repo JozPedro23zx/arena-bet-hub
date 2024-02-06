@@ -77,14 +77,14 @@ func TestUpdateRanking(t *testing.T) {
 	result.UpdateRanking(participant2.ID, socre2)
 	result.UpdateRanking(participant3.ID, score3)
 
-	assert.Equal(t, 1, result.Ranking[0].Position)
-	assert.Equal(t, participant2.ID, result.Ranking[0].ParticipantId)
+	assert.Equal(t, 1, result.Ranking()[0].Position)
+	assert.Equal(t, participant2.ID, result.Ranking()[0].ParticipantId)
 
-	assert.Equal(t, 2, result.Ranking[1].Position)
-	assert.Equal(t, participant1.ID, result.Ranking[1].ParticipantId)
+	assert.Equal(t, 2, result.Ranking()[1].Position)
+	assert.Equal(t, participant1.ID, result.Ranking()[1].ParticipantId)
 
-	assert.Equal(t, 3, result.Ranking[2].Position)
-	assert.Equal(t, participant3.ID, result.Ranking[2].ParticipantId)
+	assert.Equal(t, 3, result.Ranking()[2].Position)
+	assert.Equal(t, participant3.ID, result.Ranking()[2].ParticipantId)
 
 	result.CloseResult()
 

@@ -33,7 +33,7 @@ func TestCloseResult(t *testing.T) {
 	expectedOutput := ResultOutputDto{
 		ID:           "result123",
 		TurnamentID:  "tournament123",
-		Ranking:      []Tournament.Ranking{},
+		Ranking:      []RankingOutputDto{},
 		Open:         false,
 		DateFinished: resultUpdated.DateFinished,
 	}
@@ -48,14 +48,14 @@ func TestRegisterParticipant(t *testing.T) {
 	repositoryMock := mock_tournament_repositories.NewMockResultRepository(ctrl)
 
 	input := RankingInputDto{
-		ID:            "result123",
+		ResultID:      "result123",
 		ParticipantID: "participant123",
 		Score:         0,
 	}
 
-	result := Tournament.NewResult(input.ID, "tournament123")
+	result := Tournament.NewResult(input.ResultID, "tournament123")
 
-	repositoryMock.EXPECT().Find(input.ID).Return(result, nil)
+	repositoryMock.EXPECT().Find(input.ResultID).Return(result, nil)
 
 	updateResult := NewUpdateResult(repositoryMock)
 	err := updateResult.AddParticipant(input)
@@ -69,15 +69,15 @@ func TestParticipantAlreadyRegistered(t *testing.T) {
 	repositoryMock := mock_tournament_repositories.NewMockResultRepository(ctrl)
 
 	input := RankingInputDto{
-		ID:            "result123",
+		ResultID:      "result123",
 		ParticipantID: "participant123",
 		Score:         0,
 	}
 
-	result := Tournament.NewResult(input.ID, "tournament123")
+	result := Tournament.NewResult(input.ResultID, "tournament123")
 	result.DefineRanking(input.ParticipantID)
 
-	repositoryMock.EXPECT().Find(input.ID).Return(result, nil)
+	repositoryMock.EXPECT().Find(input.ResultID).Return(result, nil)
 
 	updateResult := NewUpdateResult(repositoryMock)
 	err := updateResult.AddParticipant(input)
@@ -98,7 +98,7 @@ func TestUpdateRanking(t *testing.T) {
 	}
 
 	input := RankingInputDto{
-		ID:            "result123",
+		ResultID:      "result123",
 		ParticipantID: participant.ID,
 		Score:         12.22,
 	}
@@ -113,10 +113,19 @@ func TestUpdateRanking(t *testing.T) {
 	repositoryMock.EXPECT().Find(result.ID).Return(result, nil)
 	repositoryMock.EXPECT().Update(*resultUpdated).Return(resultUpdated, nil)
 
+	rankingOutput := []RankingOutputDto{}
+	for _, rank := range resultUpdated.Ranking() {
+		output := RankingOutputDto{
+			ParticipantID: rank.ParticipantId,
+			Score:         rank.Score,
+		}
+		rankingOutput = append(rankingOutput, output)
+	}
+
 	expectedOutput := ResultOutputDto{
 		ID:           "result123",
 		TurnamentID:  "tournament123",
-		Ranking:      resultUpdated.Ranking,
+		Ranking:      rankingOutput,
 		Open:         true,
 		DateFinished: resultUpdated.DateFinished,
 	}
@@ -127,7 +136,7 @@ func TestUpdateRanking(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, expectedOutput, output)
 	assert.NotEmpty(t, output)
-	assert.Equal(t, output.Ranking[0].ParticipantId, input.ParticipantID)
+	assert.Equal(t, output.Ranking[0].ParticipantID, input.ParticipantID)
 }
 
 func TestResultHasBeenClosed(t *testing.T) {
@@ -143,7 +152,7 @@ func TestResultHasBeenClosed(t *testing.T) {
 	}
 
 	input := RankingInputDto{
-		ID:            "result123",
+		ResultID:      "result123",
 		ParticipantID: participant.ID,
 		Score:         12.22,
 	}
@@ -153,15 +162,24 @@ func TestResultHasBeenClosed(t *testing.T) {
 	result.UpdateRanking(participant.ID, 15.55)
 	result.CloseResult()
 
-	repositoryMock.EXPECT().Find(input.ID).Return(result, nil)
+	repositoryMock.EXPECT().Find(input.ResultID).Return(result, nil)
 
 	updateResult := NewUpdateResult(repositoryMock)
 	output, err := updateResult.UpdateRanking(input)
 
+	rankingOutput := []RankingOutputDto{}
+	for _, rank := range result.Ranking() {
+		output := RankingOutputDto{
+			ParticipantID: rank.ParticipantId,
+			Score:         rank.Score,
+		}
+		rankingOutput = append(rankingOutput, output)
+	}
+
 	expectedOutput := ResultOutputDto{
 		ID:           "result123",
 		TurnamentID:  "tournament123",
-		Ranking:      result.Ranking,
+		Ranking:      rankingOutput,
 		Open:         false,
 		DateFinished: result.DateFinished,
 	}

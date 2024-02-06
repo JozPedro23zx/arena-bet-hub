@@ -15,7 +15,7 @@ type Ranking struct {
 type Result struct {
 	ID           string
 	TournamentId string
-	Ranking      []Ranking
+	ranking      []Ranking
 	Open         bool
 	DateFinished time.Time
 }
@@ -24,10 +24,14 @@ func NewResult(id string, tournamentId string) *Result {
 	return &Result{
 		ID:           id,
 		TournamentId: tournamentId,
-		Ranking:      []Ranking{},
+		ranking:      []Ranking{},
 		Open:         true,
 		DateFinished: time.Time{},
 	}
+}
+
+func (r *Result) Ranking() []Ranking {
+	return r.ranking
 }
 
 func (r *Result) CloseResult() {
@@ -37,7 +41,7 @@ func (r *Result) CloseResult() {
 
 func (r *Result) DefineRanking(participantId string) (Ranking, error) {
 	if r.Open {
-		for _, existingRanking := range r.Ranking {
+		for _, existingRanking := range r.ranking {
 			if existingRanking.ParticipantId == participantId {
 
 				return existingRanking, errors.New("participant already registered")
@@ -49,7 +53,7 @@ func (r *Result) DefineRanking(participantId string) (Ranking, error) {
 			Position:      0,
 			Score:         0,
 		}
-		r.Ranking = append(r.Ranking, rank)
+		r.ranking = append(r.ranking, rank)
 		return rank, nil
 	}
 	return Ranking{}, errors.New("Result cannot be changed")
@@ -57,16 +61,16 @@ func (r *Result) DefineRanking(participantId string) (Ranking, error) {
 
 func (r *Result) UpdateRanking(participantID string, newScore float64) error {
 	if r.Open {
-		for i, rank := range r.Ranking {
+		for i, rank := range r.ranking {
 			if rank.ParticipantId == participantID {
-				r.Ranking[i].Score = newScore
+				r.ranking[i].Score = newScore
 
-				sort.Slice(r.Ranking, func(i, j int) bool {
-					return r.Ranking[i].Score > r.Ranking[j].Score
+				sort.Slice(r.ranking, func(i, j int) bool {
+					return r.ranking[i].Score > r.ranking[j].Score
 				})
 
-				for i := range r.Ranking {
-					r.Ranking[i].Position = i + 1
+				for i := range r.ranking {
+					r.ranking[i].Position = i + 1
 				}
 				// return
 			}
