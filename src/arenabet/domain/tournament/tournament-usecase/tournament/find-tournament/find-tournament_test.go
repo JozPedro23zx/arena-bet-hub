@@ -9,8 +9,6 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 
-	CreateTournament "github.com/JozPedro23zx/arena-bet-hub/domain/tournament/tournament-usecase/tournament/create-tournament"
-
 	Tournament "github.com/JozPedro23zx/arena-bet-hub/domain/tournament/tournament-entities"
 )
 
@@ -19,36 +17,19 @@ func TestFindTournament(t *testing.T) {
 	defer ctrl.Finish()
 	repositoryMock := mock_tournament_repositories.NewMockTournamentRepository(ctrl)
 
-	inputCreate := CreateTournament.TournamentInputDto{
-		ID:        "l12",
-		Name:      "Namez",
-		EventDate: time.Now(),
-		Street:    "street",
-		City:      "city",
-		State:     "state",
-		Country:   "country",
-	}
-
 	location := Tournament.Location{
-		Street:  inputCreate.Street,
-		City:    inputCreate.City,
-		State:   inputCreate.State,
-		Country: inputCreate.Country,
+		Street:  "street",
+		City:    "city",
+		State:   "state",
+		Country: "country",
 	}
-
-	newTournament := Tournament.NewTournament(inputCreate.ID, inputCreate.Name, inputCreate.EventDate, location)
-
-	repositoryMock.EXPECT().Find(inputCreate.ID)
-	repositoryMock.EXPECT().Insert(*newTournament).Return(nil)
-
-	createTournament := CreateTournament.NewCreateTournament(repositoryMock)
-	_, err := createTournament.Execute(inputCreate)
+	newTournament := Tournament.NewTournament("l12", "Namez", time.Now(), location)
 
 	inputFind := TournamentInputDto{ID: "l12"}
 	expectedOutput := TournamentOutputDto{
 		ID:           "l12",
 		Name:         "Namez",
-		EventDate:    inputCreate.EventDate,
+		EventDate:    newTournament.EventDate,
 		Street:       "street",
 		City:         "city",
 		State:        "state",
