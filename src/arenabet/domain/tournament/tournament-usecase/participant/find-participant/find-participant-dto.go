@@ -5,8 +5,9 @@ type ParcitipantInputDto struct {
 }
 
 type ParticipantOutputDto struct {
-	ID            string `json:"id"`
-	Name          string `json:"name"`
-	NickName      string `json:"nickname"`
-	CountryOrigin string `json:"countryorigin"`
+	ID            string   `json:"id"`
+	Name          string   `json:"name"`
+	NickName      string   `json:"nickname"`
+	CountryOrigin string   `json:"countryorigin"`
+	Tournmaents   []string `json:"tournaments"`
 }

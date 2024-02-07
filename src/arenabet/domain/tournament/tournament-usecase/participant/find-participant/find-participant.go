@@ -22,6 +22,7 @@ func (fp *FindParticipant) Execute(input ParcitipantInputDto) (ParticipantOutput
 		Name:          participant.Name,
 		NickName:      participant.NickName,
 		CountryOrigin: participant.CountryOrigin,
+		Tournmaents:   participant.Tournamnets(),
 	}
 
 	return output, nil

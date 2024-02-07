@@ -1,11 +1,13 @@
 package tournament_entities
 
+import "errors"
+
 type Participant struct {
 	ID            string
 	Name          string
 	NickName      string
 	CountryOrigin string
-	Tournaments   []string
+	tournaments   []string
 }
 
 func NewParticipant(id string, name string, nickName string, countryOrigin string) *Participant {
@@ -14,7 +16,7 @@ func NewParticipant(id string, name string, nickName string, countryOrigin strin
 		Name:          name,
 		NickName:      nickName,
 		CountryOrigin: countryOrigin,
-		Tournaments:   []string{},
+		tournaments:   []string{},
 	}
 }
 
@@ -24,6 +26,16 @@ func (p *Participant) UpdateParticipant(name string, nickName string, countryOri
 	p.CountryOrigin = countryOrigin
 }
 
-func (p *Participant) RegisterTournamentParticipation(tournament Tournament) {
-	p.Tournaments = append(p.Tournaments, tournament.ID)
+func (p *Participant) RegisterTournamentParticipation(tournamentId string) error {
+	for _, existingId := range p.tournaments {
+		if existingId == tournamentId {
+			return errors.New("tournament already exist")
+		}
+	}
+	p.tournaments = append(p.tournaments, tournamentId)
+	return nil
+}
+
+func (p *Participant) Tournamnets() []string {
+	return p.tournaments
 }

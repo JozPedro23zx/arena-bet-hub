@@ -33,8 +33,8 @@ func TestRegisterTournamentParticipation(t *testing.T) {
 	tournament := NewTournament("1", "Tournament test", time.Date(2024, time.March, 25, 22, 0, 0, 0, time.UTC), location)
 
 	participant := NewParticipant("2", "Jon", "Jon90z", "USA")
-	participant.RegisterTournamentParticipation(*tournament)
+	participant.RegisterTournamentParticipation(*&tournament.ID)
 
-	assert.NotEmpty(t, participant.Tournaments)
-	assert.Equal(t, participant.Tournaments[0], tournament.ID)
+	assert.NotEmpty(t, participant.tournaments)
+	assert.Equal(t, participant.tournaments[0], tournament.ID)
 }

@@ -29,9 +29,40 @@ func (up UpdateParticipant) Execute(input ParcitipantInputDto) (ParticipantOutpu
 
 	output := ParticipantOutputDto{
 		ID:            participantUpdated.ID,
-		Name:          participant.Name,
-		NickName:      participant.NickName,
-		CountryOrigin: participant.CountryOrigin,
+		Name:          participantUpdated.Name,
+		NickName:      participantUpdated.NickName,
+		CountryOrigin: participantUpdated.CountryOrigin,
+		Tournmaents:   participantUpdated.Tournamnets(),
+	}
+
+	return output, nil
+}
+
+func (up UpdateParticipant) RegisterForTheTournament(input TournamentInputDto) (ParticipantOutputDto, error) {
+	participant, err := up.Repository.Find(input.ParticipantID)
+
+	if err != nil {
+		return ParticipantOutputDto{}, err
+	}
+
+	err = participant.RegisterTournamentParticipation(input.TournamentID)
+
+	if err != nil {
+		return ParticipantOutputDto{}, err
+	}
+
+	participantUpdated, err := up.Repository.Update(*participant)
+
+	if err != nil {
+		return ParticipantOutputDto{}, err
+	}
+
+	output := ParticipantOutputDto{
+		ID:            participantUpdated.ID,
+		Name:          participantUpdated.Name,
+		NickName:      participantUpdated.NickName,
+		CountryOrigin: participantUpdated.CountryOrigin,
+		Tournmaents:   participantUpdated.Tournamnets(),
 	}
 
 	return output, nil
