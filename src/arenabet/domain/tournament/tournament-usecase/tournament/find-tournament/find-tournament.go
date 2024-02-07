@@ -20,14 +20,15 @@ func (ft *FindTournament) Execute(input TournamentInputDto) (TournamentOutputDto
 	}
 
 	output := TournamentOutputDto{
-		ID:        tournament.ID,
-		Name:      tournament.Name,
-		EventDate: tournament.EventDate,
-		Street:    tournament.Location.Street,
-		City:      tournament.Location.City,
-		State:     tournament.Location.State,
-		Country:   tournament.Location.Country,
-		Finished:  tournament.Finished,
+		ID:           tournament.ID,
+		Name:         tournament.Name,
+		EventDate:    tournament.EventDate,
+		Street:       tournament.Location.Street,
+		City:         tournament.Location.City,
+		State:        tournament.Location.State,
+		Country:      tournament.Location.Country,
+		Participants: tournament.Participants(),
+		Finished:     tournament.Finished,
 	}
 
 	return output, nil

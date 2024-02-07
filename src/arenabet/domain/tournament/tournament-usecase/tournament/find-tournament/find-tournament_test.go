@@ -46,14 +46,15 @@ func TestFindTournament(t *testing.T) {
 
 	inputFind := TournamentInputDto{ID: "l12"}
 	expectedOutput := TournamentOutputDto{
-		ID:        "l12",
-		Name:      "Namez",
-		EventDate: inputCreate.EventDate,
-		Street:    "street",
-		City:      "city",
-		State:     "state",
-		Country:   "country",
-		Finished:  false,
+		ID:           "l12",
+		Name:         "Namez",
+		EventDate:    inputCreate.EventDate,
+		Street:       "street",
+		City:         "city",
+		State:        "state",
+		Country:      "country",
+		Participants: newTournament.Participants(),
+		Finished:     false,
 	}
 
 	repositoryMock.EXPECT().Find(inputFind.ID).Return(newTournament, nil)
