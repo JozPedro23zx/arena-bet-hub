@@ -27,7 +27,11 @@ func (ut *UpdateTournament) Execute(input TournamentInputDto) (TournamentOutputD
 		Country: input.Country,
 	}
 
-	tournament.UpdateTournament(input.Name, input.EventDate, newLocation)
+	err = tournament.UpdateTournament(input.Name, input.EventDate, newLocation)
+
+	if err != nil {
+		return TournamentOutputDto{}, err
+	}
 
 	updatedTournament, err := ut.Repository.Update(*tournament)
 
@@ -57,10 +61,14 @@ func (ut *UpdateTournament) AddParticipant(input ParticipantListDto) (Tournament
 		return TournamentOutputDto{}, err
 	}
 
-	participantExist := tournament.RegisterParticipant(input.ParticipantID)
+	if !input.Add {
+		tournament.RemoveParticipant(input.ParticipantID)
+	} else {
+		participantExist := tournament.RegisterParticipant(input.ParticipantID)
 
-	if participantExist != nil {
-		return TournamentOutputDto{}, participantExist
+		if participantExist != nil {
+			return TournamentOutputDto{}, participantExist
+		}
 	}
 
 	updatedTournament, err := ut.Repository.Update(*tournament)

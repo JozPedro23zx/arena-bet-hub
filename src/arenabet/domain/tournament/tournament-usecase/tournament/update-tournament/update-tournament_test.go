@@ -75,6 +75,7 @@ func TestAddParticipant(t *testing.T) {
 	input := ParticipantListDto{
 		IDTournament:  "tournament123",
 		ParticipantID: "participant123",
+		Add:           true,
 	}
 
 	location := Tournament.Location{
@@ -98,6 +99,44 @@ func TestAddParticipant(t *testing.T) {
 	assert.Equal(t, output.Participants[0], input.ParticipantID)
 }
 
+func TestRemoveParticipant(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	repositoryMock := mock_tournament_repositories.NewMockTournamentRepository(ctrl)
+
+	input := ParticipantListDto{
+		IDTournament:  "tournament123",
+		ParticipantID: "participant2",
+		Add:           false,
+	}
+
+	location := Tournament.Location{
+		Street:  "street",
+		City:    "city",
+		State:   "state",
+		Country: "country",
+	}
+
+	newTournament := Tournament.NewTournament(input.IDTournament, "event12", time.Now(), location)
+	newTournament.RegisterParticipant("participant1")
+	newTournament.RegisterParticipant("participant2")
+	newTournament.RegisterParticipant("participant3")
+
+	updatedTornament := Tournament.NewTournament(newTournament.ID, newTournament.Name, newTournament.EventDate, newTournament.Location)
+	updatedTornament.RegisterParticipant("participant1")
+	updatedTornament.RegisterParticipant("participant3")
+
+	repositoryMock.EXPECT().Find(input.IDTournament).Return(newTournament, nil)
+	repositoryMock.EXPECT().Update(*updatedTornament).Return(updatedTornament, nil)
+
+	updateTournament := NewUpdateTournament(repositoryMock)
+	output, err := updateTournament.AddParticipant(input)
+
+	assert.Nil(t, err)
+	assert.Equal(t, output.Participants[0], "participant1")
+	assert.Equal(t, output.Participants[1], "participant3")
+}
+
 func TestParticipantAlreadyExist(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -106,6 +145,7 @@ func TestParticipantAlreadyExist(t *testing.T) {
 	input := ParticipantListDto{
 		IDTournament:  "tournament123",
 		ParticipantID: "participant123",
+		Add:           true,
 	}
 
 	location := Tournament.Location{
