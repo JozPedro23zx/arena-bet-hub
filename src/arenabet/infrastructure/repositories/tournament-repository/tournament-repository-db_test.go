@@ -29,3 +29,26 @@ func TestTournamentDbInsert(t *testing.T) {
 
 	assert.Nil(t, err)
 }
+
+func TestTournamentDbFind(t *testing.T) {
+	migrationsDir := os.DirFS("fixture/sql")
+	db := fixture.Up(migrationsDir)
+	defer fixture.Down(db, migrationsDir)
+	repository := NewTournamentRepositoryDB(db)
+
+	location := Tournament.Location{
+		Street:  "street",
+		City:    "City",
+		State:   "State",
+		Country: "Country",
+	}
+
+	tournament := Tournament.NewTournament("tournament123", "Test tournament", time.Date(2024, time.March, 25, 22, 0, 0, 0, time.Local), location)
+
+	err := repository.Insert(*tournament)
+	assert.Nil(t, err)
+
+	tournamentFound, err := repository.Find(tournament.ID)
+	assert.Nil(t, err)
+	assert.Equal(t, tournament, tournamentFound)
+}
