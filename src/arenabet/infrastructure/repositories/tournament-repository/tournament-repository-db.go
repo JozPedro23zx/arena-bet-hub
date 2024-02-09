@@ -87,3 +87,34 @@ func (t *TournamentRepositoryDB) Find(id string) (*Tournament.Tournament, error)
 
 	return tournament, nil
 }
+
+func (t *TournamentRepositoryDB) Update(tournament Tournament.Tournament) (*Tournament.Tournament, error) {
+	stmt, err := t.db.Prepare(`UPDATE tournaments SET name=?, event_date=?, street=?, city=?, state=?, country=?, finished=? WHERE id=?`)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer stmt.Close()
+
+	_, err = stmt.Exec(
+		tournament.Name,
+		tournament.EventDate,
+		tournament.Location.Street,
+		tournament.Location.City,
+		tournament.Location.State,
+		tournament.Location.Country,
+		tournament.Finished,
+		tournament.ID,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	updatedTournament, err := t.Find(tournament.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return updatedTournament, nil
+}
