@@ -6,12 +6,12 @@ import (
 	"time"
 
 	Tournament "github.com/JozPedro23zx/arena-bet-hub/domain/tournament/tournament-entities"
-	"github.com/JozPedro23zx/arena-bet-hub/infrastructure/repositories/tournament-repository/fixture"
+	"github.com/JozPedro23zx/arena-bet-hub/infrastructure/repositories/fixture"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestTournamentDbInsert(t *testing.T) {
-	migrationsDir := os.DirFS("fixture/sql")
+	migrationsDir := os.DirFS("../fixture/sql")
 	db := fixture.Up(migrationsDir)
 	defer fixture.Down(db, migrationsDir)
 	repository := NewTournamentRepositoryDB(db)
@@ -31,7 +31,7 @@ func TestTournamentDbInsert(t *testing.T) {
 }
 
 func TestTournamentDbFind(t *testing.T) {
-	migrationsDir := os.DirFS("fixture/sql")
+	migrationsDir := os.DirFS("../fixture/sql")
 	db := fixture.Up(migrationsDir)
 	defer fixture.Down(db, migrationsDir)
 	repository := NewTournamentRepositoryDB(db)
@@ -54,7 +54,7 @@ func TestTournamentDbFind(t *testing.T) {
 }
 
 func TestTournamentDbUpdate(t *testing.T) {
-	migrationsDir := os.DirFS("fixture/sql")
+	migrationsDir := os.DirFS("../fixture/sql")
 	db := fixture.Up(migrationsDir)
 	defer fixture.Down(db, migrationsDir)
 	repository := NewTournamentRepositoryDB(db)
@@ -78,5 +78,5 @@ func TestTournamentDbUpdate(t *testing.T) {
 	tournamentUpdated, err := repository.Update(*newTournament)
 
 	assert.Nil(t, err)
-	assert.Equal(t, tournamentUpdated, newTournament)
+	assert.Equal(t, newTournament, tournamentUpdated)
 }

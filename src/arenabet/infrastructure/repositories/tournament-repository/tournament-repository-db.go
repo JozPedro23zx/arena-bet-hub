@@ -45,24 +45,18 @@ func (t *TournamentRepositoryDB) Find(id string) (*Tournament.Tournament, error)
 	query := `SELECT id, name, event_date, street, state, city, country, finished FROM tournaments WHERE id = ?`
 	row := t.db.QueryRow(query, id)
 
-	var tournamentID string
-	var tournamentName string
+	tournament := Tournament.Tournament{}
 	var tournamentDate string
-	var street string
-	var state string
-	var city string
-	var country string
-	var tournamentFinished string
 
 	err := row.Scan(
-		&tournamentID,
-		&tournamentName,
+		&tournament.ID,
+		&tournament.Name,
 		&tournamentDate,
-		&street,
-		&state,
-		&city,
-		&country,
-		&tournamentFinished,
+		&tournament.Location.Street,
+		&tournament.Location.State,
+		&tournament.Location.City,
+		&tournament.Location.Country,
+		&tournament.Finished,
 	)
 
 	if err != nil {
@@ -78,14 +72,14 @@ func (t *TournamentRepositoryDB) Find(id string) (*Tournament.Tournament, error)
 	}
 
 	location := Tournament.Location{
-		Street:  street,
-		State:   state,
-		City:    city,
-		Country: country,
+		Street:  tournament.Location.Street,
+		State:   tournament.Location.State,
+		City:    tournament.Location.City,
+		Country: tournament.Location.Country,
 	}
-	tournament := Tournament.NewTournament(tournamentID, tournamentName, eventDate, location)
+	tournamentFound := Tournament.NewTournament(tournament.ID, tournament.Name, eventDate, location)
 
-	return tournament, nil
+	return tournamentFound, nil
 }
 
 func (t *TournamentRepositoryDB) Update(tournament Tournament.Tournament) (*Tournament.Tournament, error) {
