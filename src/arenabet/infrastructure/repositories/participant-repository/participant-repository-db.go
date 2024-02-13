@@ -16,7 +16,7 @@ func NewParticipantRepositoryDB(db *sql.DB) *ParticipantRepositoryDB {
 }
 
 func (p *ParticipantRepositoryDB) Insert(participant Tournament.Participant) error {
-	stmt, err := p.db.Prepare("INSERT into participants (id, name, nick_name, country_origin) values(?, ?, ?, ?)")
+	stmt, err := p.db.Prepare(`INSERT into participants (id, name, nick_name, country_origin) values(?, ?, ?, ?)`)
 
 	if err != nil {
 		return err
