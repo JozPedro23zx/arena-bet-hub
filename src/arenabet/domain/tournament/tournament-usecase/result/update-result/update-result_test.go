@@ -4,6 +4,8 @@ import (
 	"testing"
 
 	mock_tournament_repositories "github.com/JozPedro23zx/arena-bet-hub/domain/tournament/tournament-repositories/mock"
+	mock_broker "github.com/JozPedro23zx/arena-bet-hub/infrastructure/broker/mock"
+
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 
@@ -14,6 +16,7 @@ func TestCloseResult(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	repositoryMock := mock_tournament_repositories.NewMockResultRepository(ctrl)
+	producerMock := mock_broker.NewMockProducerInterface(ctrl)
 
 	input := OpenInputDto{
 		ID:   "result123",
@@ -24,12 +27,6 @@ func TestCloseResult(t *testing.T) {
 	resultUpdated := Tournament.NewResult(input.ID, "tournament123")
 	resultUpdated.CloseResult()
 
-	repositoryMock.EXPECT().Find(input.ID).Return(result, nil)
-	repositoryMock.EXPECT().Update(*resultUpdated).Return(resultUpdated, nil)
-
-	updateResult := NewUpdateResult(repositoryMock)
-	output, err := updateResult.CloseOrOpenResult(input)
-
 	expectedOutput := ResultOutputDto{
 		ID:           "result123",
 		TurnamentID:  "tournament123",
@@ -37,6 +34,13 @@ func TestCloseResult(t *testing.T) {
 		Open:         false,
 		DateFinished: resultUpdated.DateFinished,
 	}
+
+	repositoryMock.EXPECT().Find(input.ID).Return(result, nil)
+	repositoryMock.EXPECT().Update(*resultUpdated).Return(resultUpdated, nil)
+	producerMock.EXPECT().Publish(expectedOutput, []byte(input.ID), "close_open_result")
+
+	updateResult := NewCloseOrOpenResult(repositoryMock, producerMock, "close_open_result")
+	output, err := updateResult.Execute(input)
 
 	assert.Nil(t, err)
 	assert.Equal(t, expectedOutput, output)
