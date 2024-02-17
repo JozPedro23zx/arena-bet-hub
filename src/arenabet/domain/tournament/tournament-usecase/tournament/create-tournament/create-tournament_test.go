@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	mock_tournament_repositories "github.com/JozPedro23zx/arena-bet-hub/domain/tournament/tournament-repositories/mock"
+	mock_broker "github.com/JozPedro23zx/arena-bet-hub/infrastructure/broker/mock"
 	"github.com/golang/mock/gomock"
 
 	Tournament "github.com/JozPedro23zx/arena-bet-hub/domain/tournament/tournament-entities"
@@ -24,8 +25,9 @@ func TestCreateTournament(t *testing.T) {
 	}
 
 	expectedOutput := TournamentOutputDto{
-		ID:   "l12",
-		Name: "Namez",
+		ID:       "l12",
+		Name:     "Namez",
+		Finished: false,
 	}
 
 	ctrl := gomock.NewController(t)
@@ -44,50 +46,34 @@ func TestCreateTournament(t *testing.T) {
 	repositoryMock.EXPECT().Find(input.ID)
 	repositoryMock.EXPECT().Insert(*newTournament).Return(nil)
 
-	usecase := NewCreateTournament(repositoryMock)
+	producerMock := mock_broker.NewMockProducerInterface(ctrl)
+	producerMock.EXPECT().Publish(expectedOutput, []byte(input.ID), "tournament_created")
+
+	usecase := NewCreateTournament(repositoryMock, producerMock, "tournament_created")
 
 	output, err := usecase.Execute(input)
-
 	assert.Nil(t, err)
 	assert.Equal(t, expectedOutput, output)
 }
 
 func TestTournamentAlreadyExist(t *testing.T) {
-	input1 := TournamentInputDto{
-		ID:        "l12",
-		Name:      "Namez",
-		EventDate: time.Now(),
-		Street:    "street",
-		City:      "city",
-		State:     "state",
-		Country:   "country",
-	}
-
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	repositoryMock := mock_tournament_repositories.NewMockTournamentRepository(ctrl)
+	producerMock := mock_broker.NewMockProducerInterface(ctrl)
 
 	location1 := Tournament.Location{
-		Street:  input1.Street,
-		City:    input1.City,
-		State:   input1.State,
-		Country: input1.Country,
+		Street:  "street",
+		City:    "city",
+		State:   "state",
+		Country: "country",
 	}
+	tournament := Tournament.NewTournament("l12", "Namez", time.Now(), location1)
 
-	tournament1 := Tournament.NewTournament(input1.ID, input1.Name, input1.EventDate, location1)
-
-	repositoryMock.EXPECT().Find(input1.ID)
-	repositoryMock.EXPECT().Insert(*tournament1).Return(nil)
-
-	usecase := NewCreateTournament(repositoryMock)
-
-	_, err := usecase.Execute(input1)
-	assert.Nil(t, err)
-
-	input2 := TournamentInputDto{
+	input := TournamentInputDto{
 		ID:        "l12",
 		Name:      "Battlez",
-		EventDate: time.Now(),
+		EventDate: tournament.EventDate,
 		Street:    "street 2",
 		City:      "city 2",
 		State:     "state 3",
@@ -95,14 +81,16 @@ func TestTournamentAlreadyExist(t *testing.T) {
 	}
 
 	expectedOutput := TournamentOutputDto{
-		ID:   "l12",
-		Name: "Namez",
+		ID:       "l12",
+		Name:     "Namez",
+		Finished: false,
 	}
 
-	repositoryMock.EXPECT().Find(input2.ID).Return(tournament1, nil)
+	repositoryMock.EXPECT().Find(input.ID).Return(tournament, nil)
+	usecase := NewCreateTournament(repositoryMock, producerMock, "tournament_created")
 
-	output, err := usecase.Execute(input2)
+	output, err := usecase.Execute(input)
 
-	assert.Error(t, err, "Tournament already exist")
+	assert.Error(t, err, "tournament already exist")
 	assert.Equal(t, expectedOutput, output)
 }

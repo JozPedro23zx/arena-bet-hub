@@ -13,6 +13,7 @@ type TournamentInputDto struct {
 }
 
 type TournamentOutputDto struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	ID       string `json:"id"`
+	Name     string `json:"name"`
+	Finished bool   `json:"finished"`
 }
