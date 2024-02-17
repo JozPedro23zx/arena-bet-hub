@@ -6,6 +6,8 @@ import (
 	"time"
 
 	mock_tournament_repositories "github.com/JozPedro23zx/arena-bet-hub/domain/tournament/tournament-repositories/mock"
+	mock_broker "github.com/JozPedro23zx/arena-bet-hub/infrastructure/broker/mock"
+
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 
@@ -71,8 +73,9 @@ func TestAddParticipant(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	repositoryMock := mock_tournament_repositories.NewMockTournamentRepository(ctrl)
+	producerMock := mock_broker.NewMockProducerInterface(ctrl)
 
-	input := ParticipantListDto{
+	input := ParticipantDto{
 		IDTournament:  "tournament123",
 		ParticipantID: "participant123",
 		Add:           true,
@@ -89,11 +92,24 @@ func TestAddParticipant(t *testing.T) {
 	updatedTornament := Tournament.NewTournament(newTournament.ID, newTournament.Name, newTournament.EventDate, newTournament.Location)
 	updatedTornament.RegisterParticipant(input.ParticipantID)
 
+	resultOutput := TournamentOutputDto{
+		ID:           updatedTornament.ID,
+		Name:         updatedTornament.Name,
+		EventDate:    updatedTornament.EventDate,
+		Street:       updatedTornament.Location.Street,
+		City:         updatedTornament.Location.City,
+		State:        updatedTornament.Location.State,
+		Country:      updatedTornament.Location.Country,
+		Participants: updatedTornament.Participants(),
+		Finished:     updatedTornament.Finished,
+	}
+
 	repositoryMock.EXPECT().Find(input.IDTournament).Return(newTournament, nil)
 	repositoryMock.EXPECT().Update(*updatedTornament).Return(updatedTornament, nil)
+	producerMock.EXPECT().Publish(resultOutput, []byte(input.IDTournament), "add_participant")
 
-	updateTournament := NewUpdateTournament(repositoryMock)
-	output, err := updateTournament.AddParticipant(input)
+	updateTournament := NewAddParticipant(repositoryMock, producerMock, "add_participant")
+	output, err := updateTournament.Execute(input)
 
 	assert.Nil(t, err)
 	assert.Equal(t, output.Participants[0], input.ParticipantID)
@@ -103,8 +119,9 @@ func TestRemoveParticipant(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	repositoryMock := mock_tournament_repositories.NewMockTournamentRepository(ctrl)
+	producerMock := mock_broker.NewMockProducerInterface(ctrl)
 
-	input := ParticipantListDto{
+	input := ParticipantDto{
 		IDTournament:  "tournament123",
 		ParticipantID: "participant2",
 		Add:           false,
@@ -126,11 +143,24 @@ func TestRemoveParticipant(t *testing.T) {
 	updatedTornament.RegisterParticipant("participant1")
 	updatedTornament.RegisterParticipant("participant3")
 
+	resultOutput := TournamentOutputDto{
+		ID:           updatedTornament.ID,
+		Name:         updatedTornament.Name,
+		EventDate:    updatedTornament.EventDate,
+		Street:       updatedTornament.Location.Street,
+		City:         updatedTornament.Location.City,
+		State:        updatedTornament.Location.State,
+		Country:      updatedTornament.Location.Country,
+		Participants: updatedTornament.Participants(),
+		Finished:     updatedTornament.Finished,
+	}
+
 	repositoryMock.EXPECT().Find(input.IDTournament).Return(newTournament, nil)
 	repositoryMock.EXPECT().Update(*updatedTornament).Return(updatedTornament, nil)
+	producerMock.EXPECT().Publish(resultOutput, []byte(input.IDTournament), "add_participant")
 
-	updateTournament := NewUpdateTournament(repositoryMock)
-	output, err := updateTournament.AddParticipant(input)
+	updateTournament := NewAddParticipant(repositoryMock, producerMock, "add_participant")
+	output, err := updateTournament.Execute(input)
 
 	assert.Nil(t, err)
 	assert.Equal(t, output.Participants[0], "participant1")
@@ -141,8 +171,9 @@ func TestParticipantAlreadyExist(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	repositoryMock := mock_tournament_repositories.NewMockTournamentRepository(ctrl)
+	producerMock := mock_broker.NewMockProducerInterface(ctrl)
 
-	input := ParticipantListDto{
+	input := ParticipantDto{
 		IDTournament:  "tournament123",
 		ParticipantID: "participant123",
 		Add:           true,
@@ -160,8 +191,8 @@ func TestParticipantAlreadyExist(t *testing.T) {
 
 	repositoryMock.EXPECT().Find(input.IDTournament).Return(newTournament, nil)
 
-	updateTournament := NewUpdateTournament(repositoryMock)
-	_, err := updateTournament.AddParticipant(input)
+	updateTournament := NewAddParticipant(repositoryMock, producerMock, "add_participant")
+	_, err := updateTournament.Execute(input)
 
 	assert.Error(t, err, participantAlreadyExist)
 }
