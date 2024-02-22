@@ -12,7 +12,7 @@ type TournamentInputDto struct {
 	Country   string    `json:"country"`
 }
 
-type ParticipantListDto struct {
+type ParticipantDto struct {
 	IDTournament  string `json:"idtournament"`
 	ParticipantID string `json:"participantid"`
 	Add           bool   `json:"add"`

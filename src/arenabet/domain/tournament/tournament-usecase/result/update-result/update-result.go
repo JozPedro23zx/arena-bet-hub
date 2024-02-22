@@ -15,35 +15,6 @@ func NewUpdateResult(repository repository.ResultRepository) *UpdateResult {
 	return &UpdateResult{Repository: repository}
 }
 
-func (ur *UpdateResult) CloseOrOpenResult(input OpenInputDto) (ResultOutputDto, error) {
-	result, err := ur.Repository.Find(input.ID)
-
-	if err != nil {
-		return ResultOutputDto{}, err
-	}
-
-	if !input.Open {
-		result.CloseResult()
-	}
-
-	updatedResult, err := ur.Repository.Update(*result)
-
-	if err != nil {
-		return ResultOutputDto{}, err
-	}
-
-	rankingOutput := getRanking(*updatedResult)
-	output := ResultOutputDto{
-		ID:           updatedResult.ID,
-		TurnamentID:  updatedResult.TournamentId,
-		Ranking:      rankingOutput,
-		Open:         updatedResult.Open,
-		DateFinished: updatedResult.DateFinished,
-	}
-
-	return output, nil
-}
-
 func (ur *UpdateResult) AddParticipant(input RankingInputDto) error {
 	result, err := ur.Repository.Find(input.ResultID)
 
