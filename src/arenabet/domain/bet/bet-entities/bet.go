@@ -11,11 +11,10 @@ type Bet struct {
 	IDTournament string
 	Type         TypeBet
 	Value        float64
-	status       string
 }
 
 func NewBet(id string, user string, tournament string, value float64) *Bet {
-	return &Bet{ID: id, IDUser: user, IDTournament: tournament, Value: value, status: "pendent"}
+	return &Bet{ID: id, IDUser: user, IDTournament: tournament, Value: value}
 }
 
 func (b *Bet) DefineType(typeDefined string, value string) error {
@@ -72,12 +71,4 @@ func (tb *Bet) VerifyBetResult(result string, odds float64) float64 {
 	}
 
 	return 0
-}
-
-func (b *Bet) Status() string {
-	return b.status
-}
-
-func (b *Bet) SetStatus(result string) {
-	b.status = result
 }
