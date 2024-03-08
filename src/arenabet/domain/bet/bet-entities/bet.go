@@ -38,8 +38,8 @@ func (b *Bet) DefineType(typeDefined string, value string) error {
 	return nil
 }
 
-func (b *Bet) CalculateAward(odds float64) float64 {
-	payment := b.Value * odds
+func (b *Bet) CalculateAward(odds float64, bonus float64) float64 {
+	payment := b.Value*odds + bonus
 	return payment
 }
 

@@ -11,7 +11,7 @@ func TestCalculateAward(t *testing.T) {
 	odds := 2.0
 	expectedPayment := 200.0
 
-	payment := bet.CalculateAward(odds)
+	payment := bet.CalculateAward(odds, 0)
 
 	assert.Equal(t, expectedPayment, payment)
 }
