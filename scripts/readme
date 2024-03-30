@@ -1,0 +1,20 @@
+
+## Commands
+
+With docker installed, run the commands in the arenabet folder:
+
+```bash
+  docker compose up -d
+  docker compose exec -it app bash
+```
+
+To generate the mocks:
+```bash
+mockgen -destination=infrastructure/broker/mock/producer-interface-mock.go -source=infrastructure/broker/producer-interface.go
+
+mockgen -destination=domain/tournament/tournament-repositories/mock/tournament-mock.go -source=domain/tournament/tournament-repositories/tournament-repository.go
+
+mockgen -destination=domain/tournament/tournament-repositories/mock/result-mock.go -source=domain/tournament/tournament-repositories/result-repository.go
+
+mockgen -destination=domain/tournament/tournament-repositories/mock/participant-mock.go -source=domain/tournament/tournament-repositories/participant-repository.go
+```
